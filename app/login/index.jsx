@@ -1,88 +1,86 @@
-import { View, Text,Image, Pressable,Button} from 'react-native'
-import React from 'react'
-import Colors from './../../constants/Colors'
-import { useCallback, useEffect } from 'react'
-import * as WebBrowser from 'expo-web-browser'
-import * as AuthSession from 'expo-auth-session'
-import { useSSO } from '@clerk/clerk-expo'
-import * as Linking  from 'expo-linking'
-
-export const useWarmUpBrowser = () => {
-    useEffect(() => {
-      void WebBrowser.warmUpAsync()
-      return () => {
-        void WebBrowser.coolDownAsync()
-      }
-    }, [])
-  }
-  
-  WebBrowser.maybeCompleteAuthSession()
+import React, { useCallback, useState } from 'react';
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import Colors from '../../constants/Colors';
 
 export default function LoginScreen() {
-    useWarmUpBrowser();
-    const { startSSOFlow } = useSSO()
-    const onPress = useCallback(async () => {
-        try {
-          const { createdSessionId, setActive, signIn, signUp } = await startSSOFlow({
-            strategy: 'oauth_google',
-            redirectUrl: Linking.createURL('/home',{scheme:'myapp'}),
-          })
-          if (createdSessionId) {
-            
-          } else {
-          }
-        } catch (err) {
-          console.error(JSON.stringify(err, null, 2))
-        }
-      }, [])
+    const [loading, setLoading] = useState(false);
     
-  return (
-    <View style={{
-        backgroundColor:Colors.WHITE,
-        height:'100%'
-    }}>
-        <Image source={require('./../../assets/images/logo2.webp')}
-        style={{
-            width:'100%',
-            height:500
-        }}
-        />
-        <View style={{
-            padding:30,
-            display:'flex',
-            alignItems:'center'
-        }}>
-        <Text style={{
-            fontFamily:'Oswald-Bold',
-            fontSize: 30,
-            textAlign:'center'
-        }}>Feeling Lonely!??</Text>
-        <Text style={{
-            fontFamily:'Oswald-regular',
-            fontSize: 20,
-            marginTop:15,
-            textAlign:'center',
-            color:Colors.DG
-        }}>Hang with people nearby you</Text>
-        <Pressable 
-        onPress={onPress}
-        style={{
-            padding:14,
-            marginTop:50,
-            backgroundColor:Colors.LOGO_BG,
-            width:'100%',
-            borderRadius:14
-        }}>
-            <Text style={{
-                textAlign:'center',
-                fontFamily:'Oswald-medium',
-                fontSize:20
-            }}>
-                Get Started
-            </Text>
-        </Pressable>
+    const onPress = useCallback(async () => {
+        setLoading(true);
+        try {
+            // Navigate to the profile form
+            router.push('/login/profile');
+        } catch (error) {
+            console.error('Error navigating:', error);
+            Alert.alert('Error', 'Something went wrong. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+    
+    return (
+        <View style={styles.container}>
+            <Image 
+                source={require('./../../assets/images/logo2.webp')}
+                style={styles.logo}
+            />
+            <View style={styles.contentContainer}>
+                <Text style={styles.title}>Feeling Lonely!??</Text>
+                <Text style={styles.subtitle}>Hang with people nearby you</Text>
+                <Pressable 
+                    onPress={onPress}
+                    disabled={loading}
+                    style={[styles.button, loading && styles.buttonDisabled]}
+                >
+                    <Text style={styles.buttonText}>
+                        {loading ? 'Loading...' : 'Get Started'}
+                    </Text>
+                </Pressable>
+            </View>
         </View>
-      
-    </View>
-  )
+    );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: Colors.WHITE,
+        height: '100%'
+    },
+    logo: {
+        width: '100%',
+        height: 500
+    },
+    contentContainer: {
+        padding: 30,
+        display: 'flex',
+        alignItems: 'center'
+    },
+    title: {
+        fontFamily: 'Oswald-Bold',
+        fontSize: 30,
+        textAlign: 'center'
+    },
+    subtitle: {
+        fontFamily: 'Oswald-Regular',
+        fontSize: 20,
+        marginTop: 15,
+        textAlign: 'center',
+        color: Colors.DG
+    },
+    button: {
+        padding: 14,
+        marginTop: 50,
+        backgroundColor: Colors.LOGO_BG,
+        width: '100%',
+        borderRadius: 14
+    },
+    buttonDisabled: {
+        opacity: 0.7
+    },
+    buttonText: {
+        textAlign: 'center',
+        fontFamily: 'Oswald-Medium',
+        fontSize: 20
+    }
+});

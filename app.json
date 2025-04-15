@@ -9,12 +9,27 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+        "infoPlist": {
+          "NSLocationWhenInUseUsageDescription": "Allow InstaHang to use your location to find people nearby."
+        },
+        "config": {
+          "googleMapsApiKey": "AIzaSyDzSvMeCSXhm9FtH43p5fnRInqWC4G-UPgs"
+        }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDzSvMeCSXhm9FtH43p5fnRInqWC4G-UPg"
+        }
       }
     },
     "web": {
@@ -31,6 +46,12 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow InstaHang to use your location to find people nearby."
         }
       ]
     ],
